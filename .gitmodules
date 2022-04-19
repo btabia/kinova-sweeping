@@ -1,0 +1,6 @@
+[submodule "third-party/kortex"]
+	path = third-party/kortex
+	url = https://github.com/Kinovarobotics/kortex.git
+[submodule "third-party/doxygen-awesome-css"]
+	path = third-party/doxygen-awesome-css
+	url = https://github.com/jothepro/doxygen-awesome-css.git
