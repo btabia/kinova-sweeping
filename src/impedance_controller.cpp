@@ -14,6 +14,7 @@
 #include "Math/Coriolis.h"
 #include "Math/ForwardKinematics.h"
 #include "Math/Gravity.h"
+#include "Math/MassMatrix.h"
 #include <atomic>
 #include <chrono>
 #include <functional>
@@ -27,9 +28,13 @@ ImpedanceController::ImpedanceController(std::string name) : Node(name), name(na
   float rotational_stiffness = 1500;
   float rotational_damping = 0.1; 
 
+  float null_gain = 0.5;
 
+  null_space_gain << null_gain, null_gain, null_gain, null_gain, null_gain, null_gain , null_gain;
   stiffness << linear_stiffness, linear_stiffness, linear_stiffness, rotational_stiffness, rotational_stiffness, rotational_stiffness;
   damping << linear_damping, linear_damping, linear_damping, rotational_damping, rotational_damping, rotational_damping;
+
+  default_joint_position << 0, 0, 0, 0, 0, 0, 0;
 
   for (int i = 1; i < 6; ++i) {
     params["/axis_" + std::to_string(i) + "/stiffness"] = stiffness[i-1];
@@ -95,12 +100,20 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
   Eigen::Matrix<float,3,3> orientation = Eigen3x3f::Zero();
   Eigen::Matrix<float,6,7> jacobian_matrix;
   Eigen7f coriolis_force = Eigen7f::Zero();
-
-
+  Eigen7f gravity_force = Eigen7f::Zero();
+  Eigen7x7f mass_mtx = Eigen7x7f::Zero();
+  Eigen7x7f mass_mtx_inv = Eigen7x7f::Zero();
+  Eigen7x7f jacobian_inv = Eigen7x7f::Zero();
 
   forward_kinematics(pActual, pose_observation, orientation);
   jacobian(pActual, jacobian_matrix);
   coriolis(pActual, dqActual, coriolis_force);
+  gravity(pActual, gravity_force);
+  mass_matrix(pActual, mass_mtx);
+  mass_mtx_inv << mass_mtx.completeOrthogonalDecomposition().pseudoInverse();
+  jacobian_inv << mass_mtx * jacobian_matrix * mass_mtx_inv;
+
+
 
   Eigen3f oActual = orientation.eulerAngles(0,1,2);
 
@@ -160,7 +173,21 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
                     0,0,0,0,0,damping(5);
 
   tau << jacobian_matrix.transpose() * (-stiffness_matrix * error - damping_matrix * (jacobian_matrix * dqActual));
-  tau_output << tau + coriolis_force;
+  
+  
+  /************* Coriolis and gravity compensation ******************/
+  tau_output << tau + coriolis_force + gravity_force;
+
+  /*************Null Space Controller ******************/
+  Eigen7f u_null = Eigen7f::Zero();
+  Eigen7f u = Eigen7f::Zero();
+  Eigen7f joint_error = Eigen7f::Zero();
+  joint_error = default_joint_position - pActual;
+  u_null << joint_error * null_space_gain;
+  Eigen7x7f I = Eigen::Identity();
+  u = (I - jacobian_matrix.transpose() * jacobian_inv.transpose()) * u_null;
+
+  tau_output += u; 
 
   // large actuator torque limit
   for(unsigned int i = 0; i < 4; i++)
@@ -175,6 +202,7 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
     if(tau_output(i) < -52) tau_output(i) = -52;
   }
   std::cout << "Torque output: \n" << tau_output << std::endl;
+
   return tau_output;
 }
 

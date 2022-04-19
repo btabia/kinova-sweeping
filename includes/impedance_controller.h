@@ -94,6 +94,8 @@ private:
    *
    */
   Eigen6f stiffness, damping;
+  Eigen7f null_space_gain;
+  Eigen7f default_joint_position; 
   /**
    * @brief Locks for thread safe setters an getters of Kp and Kd
    *
