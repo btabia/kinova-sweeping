@@ -22,19 +22,19 @@
 ImpedanceController::ImpedanceController(std::string name) : Node(name), name(name) {
   std::map<std::string, float> params;
 
-  float linear_stiffness = 1500; 
-  float linear_damping = 0.1;
+  float linear_stiffness = 3000; 
+  float linear_damping = 1;
 
-  float rotational_stiffness = 1500;
-  float rotational_damping = 0.1; 
+  float rotational_stiffness = 3000;
+  float rotational_damping = 1; 
 
-  float null_gain = 0.5;
+  float null_gain = 0.01;
 
   null_space_gain << null_gain, null_gain, null_gain, null_gain, null_gain, null_gain , null_gain;
   stiffness << linear_stiffness, linear_stiffness, linear_stiffness, rotational_stiffness, rotational_stiffness, rotational_stiffness;
   damping << linear_damping, linear_damping, linear_damping, rotational_damping, rotational_damping, rotational_damping;
 
-  default_joint_position << 0, 0, 0, 0, 0, 0, 0;
+  default_joint_position << 180 DEG2RAD, 90 DEG2RAD, 0 DEG2RAD, 270 DEG2RAD, 180 DEG2RAD, 90 DEG2RAD, 180 DEG2RAD;
 
   for (int i = 1; i < 6; ++i) {
     params["/axis_" + std::to_string(i) + "/stiffness"] = stiffness[i-1];
@@ -110,8 +110,8 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
   coriolis(pActual, dqActual, coriolis_force);
   gravity(pActual, gravity_force);
   mass_matrix(pActual, mass_mtx);
-  mass_mtx_inv << mass_mtx.completeOrthogonalDecomposition().pseudoInverse();
-  jacobian_inv << mass_mtx * jacobian_matrix * mass_mtx_inv;
+  //mass_mtx_inv << mass_mtx.completeOrthogonalDecomposition().pseudoInverse();
+  //jacobian_inv << mass_mtx * jacobian_matrix * mass_mtx_inv;
 
 
 
@@ -179,15 +179,28 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
   tau_output << tau + coriolis_force + gravity_force;
 
   /*************Null Space Controller ******************/
-  Eigen7f u_null = Eigen7f::Zero();
+  /*Eigen7f u_null = Eigen7f::Zero();
   Eigen7f u = Eigen7f::Zero();
   Eigen7f joint_error = Eigen7f::Zero();
   joint_error = default_joint_position - pActual;
   u_null << joint_error * null_space_gain;
   Eigen7x7f I = Eigen::Identity();
-  u = (I - jacobian_matrix.transpose() * jacobian_inv.transpose()) * u_null;
+  u = (I - jacobian_matrix.transpose() * jacobian_inv.transpose()) * u_null;*/
 
-  tau_output += u; 
+  Eigen7x7f nsg = Eigen7x7f::Zero();
+
+  nsg << null_space_gain(0),0,0,0,0,0,0,
+          0,null_space_gain(1),0,0,0,0,0,
+          0,0,null_space_gain(2),0,0,0,0,
+          0,0,0,null_space_gain(3),0,0,0,
+          0,0,0,0,null_space_gain(4),0,0,
+          0,0,0,0,0,null_space_gain(5),0,
+          0,0,0,0,0,0,null_space_gain(6);
+
+  Eigen7f actualJoint;
+  actualJoint << pActual(0) DEG2RAD, pActual(1) DEG2RAD, pActual(2) DEG2RAD, pActual(3) DEG2RAD, pActual(4) DEG2RAD, pActual(5) DEG2RAD, pActual(6) DEG2RAD;
+
+  //tau_output += nsg * (default_joint_position - actualJoint); 
 
   // large actuator torque limit
   for(unsigned int i = 0; i < 4; i++)

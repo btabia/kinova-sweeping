@@ -84,7 +84,7 @@ void MicroPlanner::generateTrajectory()
         for(float i = 0; i < length; i += increment)
         {
             float delta_x = 0;
-            float delta_y = -increment;
+            float delta_y = increment;
             float delta_z = 0;
 
             command(0) += delta_x; // x axis
@@ -97,7 +97,7 @@ void MicroPlanner::generateTrajectory()
 
         for(float i = 0; i < height; i+= increment)
         {
-            float delta_x = -increment; // height
+            float delta_x = increment; // height
             float delta_y = 0;
             float delta_z = 0; 
 
@@ -112,7 +112,7 @@ void MicroPlanner::generateTrajectory()
         for(float i = 0; i < length; i+= increment)
         {
             float delta_x = 0;
-            float delta_y = increment;
+            float delta_y = -increment;
             float delta_z = 0;
 
             command(0) += delta_x; // x axis
@@ -125,7 +125,7 @@ void MicroPlanner::generateTrajectory()
 
         for(float i = 0; i < height; i+= increment)
         {
-            float delta_x = increment;
+            float delta_x = -increment;
             float delta_y = 0;
             float delta_z = 0; 
 
