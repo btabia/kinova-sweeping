@@ -163,4 +163,6 @@ class MicroPlanner
 
     unsigned int index; // sequence index
 
+    unsigned int turn_count;
+
 };

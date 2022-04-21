@@ -43,6 +43,7 @@ void LoopCycle::init()
   planner->setSweepingPenetration(0);
   planner->setSweepingVelocity(0.1);
   planner->setSweepingAttackAngle(0);
+  planner->setTurnCount(10);
   planner->init();
 }
 

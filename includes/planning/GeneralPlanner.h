@@ -83,6 +83,11 @@ class GeneralPlanner
             sweeping_attack_angle = input;
         }
 
+        void setTurnCount(unsigned int count)
+        {
+            turn_count = count;
+        }
+
         //********* Getter *********//
 
         float getSweepingLength()
@@ -121,6 +126,11 @@ class GeneralPlanner
             return sweeping_attack_angle;
         }
 
+        unsigned int getTurnCount()
+        {
+            return turn_count;
+        }
+
     private:
         /**
          * @brief Get the Micro Position object
@@ -142,6 +152,7 @@ class GeneralPlanner
         float sweeping_velocity;
         float sweeping_attack_angle;
         unsigned int index;
+        unsigned int turn_count;
 
         std::mutex mtx_sweeping_length;
         std::mutex mtx_sweeping_height;

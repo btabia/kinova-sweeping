@@ -56,45 +56,22 @@ Eigen6f GeneralPlanner::getMicroPosition()
 {
     Eigen6f demand;
     demand = micro_planner.getTrajectoryPoint(micro_planner.getIndex());
-    // update commands
-    /*if((micro_planner.getIndex() < micro_planner.getTrajectorySize()) && (micro_planner.getTurn() == false))
+    if(turn_count == 0)
     {
-        micro_planner.incrementIndex();
-        if(micro_planner.getIndex() == (micro_planner.getTrajectorySize() - 1))
+        return sweeping_starting_pose;
+    }
+    else if (turn_count > 0)
+    {
+        if(micro_planner.getIndex() < micro_planner.getTrajectorySize())
         {
-            micro_planner.resetIndex();
-            //micro_planner.setTurn(true);
+            micro_planner.incrementIndex();
+            if(micro_planner.getIndex() == (micro_planner.getTrajectorySize() - 1))
+            {
+                micro_planner.resetIndex();
+                turn_count --; // decrease the counter
+            }
         }
     }
-
-    if((micro_planner.getIndex() > 0) && (micro_planner.getTurn() == true))
-    {
-        micro_planner.decrementIndex();
-        if(micro_planner.getIndex() == 0)
-        {
-            //micro_planner.resetIndex();
-            //micro_planner.setTurn(false);
-        }
-    }*/
-    if(micro_planner.getIndex() < micro_planner.getTrajectorySize())
-    {
-        micro_planner.incrementIndex();
-        if(micro_planner.getIndex() == (micro_planner.getTrajectorySize() - 1))
-        {
-            micro_planner.resetIndex();
-            //micro_planner.setTurn(true);
-        }
-    }
-
-    /*if(micro_planner.getIndex() > 0)
-    {
-        micro_planner.decrementIndex();
-        if(micro_planner.getIndex() == 0)
-        {
-            //micro_planner.resetIndex();
-            //micro_planner.setTurn(false);
-        }
-    }*/
     return demand;
 }
 
