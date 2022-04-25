@@ -121,8 +121,8 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
   actual.head(3) = pose_observation;
   actual.tail(3) = oActual;
 
-  std::cout << "Demand: \n" << pDemand << std::endl;
-  std::cout << "Actual: \n" << actual << std::endl;
+  //std::cout << "Demand: \n" << pDemand << std::endl;
+  //std::cout << "Actual: \n" << actual << std::endl;
 
 
   // DEMAND
@@ -149,7 +149,7 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
   // Transform to base frame
   error.tail(3) << -orientation * error.tail(3);
 
-  std::cout << "Error: \n" << error << std::endl;
+  //std::cout << "Error: \n" << error << std::endl;
 
   //compute control
   Eigen::Matrix<float, 7,1> tau;
@@ -214,7 +214,7 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
     if(tau_output(i) > 52) tau_output(i) = 52;
     if(tau_output(i) < -52) tau_output(i) = -52;
   }
-  std::cout << "Torque output: \n" << tau_output << std::endl;
+  //std::cout << "Torque output: \n" << tau_output << std::endl;
 
   return tau_output;
 }

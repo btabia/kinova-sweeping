@@ -130,11 +130,6 @@ int main(int argc, char *argv[]) {
     // Clear Faults
     robot->clearFault();
 
-    // initialise and generate path planning coordinates
-    RCLCPP_INFO(rclcpp::get_logger("Main"), "Path Planning initialisation");
-    loopCycle->init();
-
-
 
     // Start Control
     RCLCPP_INFO(rclcpp::get_logger("Main"), "Start control? [Y/n]");

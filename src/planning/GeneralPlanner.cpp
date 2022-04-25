@@ -56,8 +56,10 @@ Eigen6f GeneralPlanner::getMicroPosition()
 {
     Eigen6f demand;
     demand = micro_planner.getTrajectoryPoint(micro_planner.getIndex());
+    //std::cout << "turn :" << turn_count << " index:" << micro_planner.getIndex() << " total:" << micro_planner.getTrajectorySize() << std::endl;
     if(turn_count == 0)
     {
+        std::cout << "Turn index :" << turn_count << std::endl;
         return sweeping_starting_pose;
     }
     else if (turn_count > 0)
@@ -69,6 +71,7 @@ Eigen6f GeneralPlanner::getMicroPosition()
             {
                 micro_planner.resetIndex();
                 turn_count --; // decrease the counter
+                std::cout << "Turn index :" << turn_count << std::endl;
             }
         }
     }
