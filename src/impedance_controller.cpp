@@ -121,8 +121,8 @@ Eigen7f ImpedanceController::calculate(Eigen7f pActual, Eigen7f dqActual, Eigen6
   actual.head(3) = pose_observation;
   actual.tail(3) = oActual;
 
-  //std::cout << "Demand: \n" << pDemand << std::endl;
-  //std::cout << "Actual: \n" << actual << std::endl;
+  std::cout << "Demand: \n" << pDemand << std::endl;
+  std::cout << "Actual: \n" << actual << std::endl;
 
 
   // DEMAND

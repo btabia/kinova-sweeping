@@ -117,6 +117,8 @@ public:
    * @param base_feedback 
    */
   void get(const Kinova::Api::BaseCyclic::Feedback *base_feedback);
+  
+  void getFirstData();
   /**
    * @brief set command data to robot
    * 

@@ -125,7 +125,10 @@ int main(int argc, char *argv[]) {
     RCLCPP_INFO(rclcpp::get_logger("Main"), "Homing robot.");
     // Clear Faults
     robot->clearFault();
+    
+    //loopCycle->init(); // to remove for real test
     robot->home();
+    
 
     // Clear Faults
     robot->clearFault();

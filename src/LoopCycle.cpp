@@ -28,21 +28,32 @@ int64_t GetTickUs() {
 
 void LoopCycle::init()
 {
+  // get first data
+  //local->getFirstData();
   this->torqueMode();
   Eigen6f first_pose = Eigen6f::Zero();
   Eigen3x3f rotation = Eigen3x3f::Zero();
   Eigen3f pose = Eigen3f::Zero();
   forward_kinematics(local->getFirstPosition(),pose,rotation);
-  first_pose.head(3) << -0.16,0, pose(2);
+  Eigen3f init ; 
+  init << -0.16, 0.007, 0.74;
+  Eigen3f offset;
+  //offset << 0,0,0; // offset for 90 degrees
+  //offset << 0,-0.06,0; // offset for 80 degrees
+  offset << 0.02, -0.12, 0.005; // offset for 70 degrees
+  /*float x_offset = -0.16 + 0.02;
+  float y_offset = 0.007 - 0.12;
+  float z_offset = 0.74 + 0.01;*/
+  first_pose.head(3) << init + offset;
   //first_pose.head(3) << pose(0),pose(1), pose(2);
   first_pose.tail(3) << rotation.eulerAngles(0,1,2);
   std::cout << "Starting pose 1 : \n " << first_pose << std::endl;
   planner->setSweepingStartingPose(first_pose);
-  planner->setSweepingHeight(0.08);
-  planner->setSweepingLength(0.2);
-  planner->setSweepingPenetration(0);
+  planner->setSweepingHeight(0.064363);
+  planner->setSweepingLength(0.15);
+  planner->setSweepingPenetration(0.01);
   planner->setSweepingVelocity(0.1);
-  planner->setSweepingAttackAngle(0);
+  planner->setSweepingAttackAngle(70);
   planner->setTurnCount(10);
   planner->init();
 }

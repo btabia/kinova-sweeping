@@ -67,6 +67,55 @@ Eigen::Vector3f MicroPlanner::getOrientation()
 
 /************** function **************/
 
+/**** orientation for 90 degrees angle of attack******/
+/*
+
+  3.08869
+  1.57064
+0.0528876
+
+x_theta = 3.08
+y_theta = 1.57
+z_theta = 0.05288976
+
+*/
+
+/**** orientation for 80 degrees angle of attack******/
+/*
+
+  1.56961
+  1.75762
+  1.57204
+
+   x_theta = 1.57
+    y_theta = 1,74533
+    z_theta = 1.57
+
+*/
+
+/**** orientation for 70 degrees angle of attack******/
+/*
+
+   1.57017
+   1.96734
+   1.57147
+
+   x_theta = 1.57017
+    y_theta = 1.96734
+    z_theta = 1.57147
+
+*/
+
+/**** orientation for 60 degrees angle of attack******/
+/*
+
+   1.57015
+   2.09665
+   1.57163
+
+*/
+
+
 void MicroPlanner::generateTrajectory()
 {
         Eigen6f command = Eigen6f::Zero();
@@ -75,10 +124,10 @@ void MicroPlanner::generateTrajectory()
         command << starting_pose;
         command(0) = command(0);
         command(1) = command(1);
-        command(2) = 0.7;
-        command(3) = 1.77;//1.66132;
-        command(4) = 1.84; //2.13062;
-        command(5) = 1.31; //-0.0718182;
+        command(2) = command(2);
+        command(3) = 1.57;
+        command(4) = 1.57 + (1.57 - attack_angle);
+        command(5) = 1.57;
         trajectory_list.emplace_back(command);
 
         for(float i = 0; i < length; i += increment)
@@ -95,7 +144,7 @@ void MicroPlanner::generateTrajectory()
                               
         }
 
-        for(float i = 0; i < height; i+= increment)
+        for(float i = 0; i < (height + penetration); i+= increment)
         {
             float delta_x = increment; // height
             float delta_y = 0;

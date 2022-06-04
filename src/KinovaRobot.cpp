@@ -226,6 +226,25 @@ void KinovaRobot::set(Eigen7f command, GripperAction gripperAction ) {
 
 }
 
+void KinovaRobot::getFirstData()
+{
+
+  auto base_feedback = base_cyclic->RefreshFeedback();
+  this->get(&base_feedback);  
+  delete  base_command;
+  base_command = new BaseCyclic::Command();
+
+  auto lambda_fct_callback =
+      [this](const Kinova::Api::Error &err,
+             const Kinova::Api::BaseCyclic::Feedback data) {
+        // set cached pose and velocity
+        this->get(&data);
+      };
+  // Send a first frame
+  base_cyclic->Refresh_callback(*base_command, lambda_fct_callback, 0);
+
+}
+
 void KinovaRobot::torqueMode() 
 {
   setState("Torque Mode");

@@ -80,7 +80,7 @@ class GeneralPlanner
         void setSweepingAttackAngle(float input)
         {
             std::lock_guard<std::mutex> lk(mtx_sweeping_attack_angle);
-            sweeping_attack_angle = input;
+            sweeping_attack_angle = input DEG2RAD;
         }
 
         void setTurnCount(unsigned int count)
